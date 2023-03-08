@@ -1,6 +1,6 @@
 import Portis from "@portis/web3";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import { Alert, Button, Col, List, Menu, Row } from "antd";
+import {Alert, Button, Col, List, Menu, Row} from "antd";
 import "antd/dist/antd.css";
 import Authereum from "authereum";
 import {
@@ -11,23 +11,23 @@ import {
   useOnBlock,
   useUserProviderAndSigner,
 } from "eth-hooks";
-import { useExchangeEthPrice } from "eth-hooks/dapps/dex";
-import { useEventListener } from "eth-hooks/events/useEventListener";
+import {useExchangeEthPrice} from "eth-hooks/dapps/dex";
+import {useEventListener} from "eth-hooks/events/useEventListener";
 import Fortmatic from "fortmatic";
-import React, { useCallback, useEffect, useState } from "react";
-import { BrowserRouter, Link, Route, Switch } from "react-router-dom";
+import React, {useCallback, useEffect, useState} from "react";
+import {BrowserRouter, Link, Route, Switch} from "react-router-dom";
 //import Torus from "@toruslabs/torus-embed"
 import WalletLink from "walletlink";
 import Web3Modal from "web3modal";
 import "./App.css";
-import { Address, Account, Balance, Contract, Faucet, GasGauge, Header, Ramp, ThemeSwitch } from "./components";
-import { INFURA_ID, NETWORK, NETWORKS, ALCHEMY_KEY } from "./constants";
+import {Address, Account, Balance, Contract, Faucet, GasGauge, Header, Ramp, ThemeSwitch} from "./components";
+import {INFURA_ID, NETWORK, NETWORKS, ALCHEMY_KEY} from "./constants";
 import externalContracts from "./contracts/external_contracts";
 // contracts
 import deployedContracts from "./contracts/hardhat_contracts.json";
-import { Transactor } from "./helpers";
+import {Transactor} from "./helpers";
 // import Hints from "./Hints";
-import { ExampleUI, Hints, Subgraph } from "./views";
+import {ExampleUI, Hints, Subgraph} from "./views";
 
 function importAll(r) {
   let images = {};
@@ -39,7 +39,7 @@ function importAll(r) {
 
 const diceImages = importAll(require.context("./images/", false, /\.(png)$/));
 
-const { ethers } = require("ethers");
+const {ethers} = require("ethers");
 /*
     Welcome to 🏗 scaffold-eth !
 
@@ -78,8 +78,8 @@ const scaffoldEthProvider = navigator.onLine
   : null;
 const poktMainnetProvider = navigator.onLine
   ? new ethers.providers.StaticJsonRpcProvider(
-      "https://eth-mainnet.gateway.pokt.network/v1/lb/61853c567335c80036054a2b",
-    )
+    "https://eth-mainnet.gateway.pokt.network/v1/lb/61853c567335c80036054a2b",
+  )
   : null;
 const mainnetInfura = navigator.onLine
   ? new ethers.providers.StaticJsonRpcProvider(`https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_KEY}`)
@@ -177,8 +177,8 @@ function App(props) {
     poktMainnetProvider && poktMainnetProvider._isProvider
       ? poktMainnetProvider
       : scaffoldEthProvider && scaffoldEthProvider._network
-      ? scaffoldEthProvider
-      : mainnetInfura;
+        ? scaffoldEthProvider
+        : mainnetInfura;
 
   const [injectedProvider, setInjectedProvider] = useState();
   const [address, setAddress] = useState();
@@ -209,6 +209,7 @@ function App(props) {
         setAddress(newAddress);
       }
     }
+
     getAddress();
   }, [userSigner]);
 
@@ -233,7 +234,7 @@ function App(props) {
 
   // const contractConfig = useContractConfig();
 
-  const contractConfig = { deployedContracts: deployedContracts || {}, externalContracts: externalContracts || {} };
+  const contractConfig = {deployedContracts: deployedContracts || {}, externalContracts: externalContracts || {}};
 
   // Load in your local 📝 contract and read a value from it:
   const readContracts = useContractLoader(localProvider, contractConfig);
@@ -308,7 +309,7 @@ function App(props) {
     const networkLocal = NETWORK(localChainId);
     if (selectedChainId === 1337 && localChainId === 31337) {
       networkDisplay = (
-        <div style={{ zIndex: 2, position: "absolute", right: 0, top: 60, padding: 16 }}>
+        <div style={{zIndex: 2, position: "absolute", right: 0, top: 60, padding: 16}}>
           <Alert
             message="⚠️ Wrong Network ID"
             description={
@@ -325,7 +326,7 @@ function App(props) {
       );
     } else {
       networkDisplay = (
-        <div style={{ zIndex: 2, position: "absolute", right: 0, top: 60, padding: 16 }}>
+        <div style={{zIndex: 2, position: "absolute", right: 0, top: 60, padding: 16}}>
           <Alert
             message="⚠️ Wrong Network"
             description={
@@ -350,7 +351,7 @@ function App(props) {
                     try {
                       switchTx = await ethereum.request({
                         method: "wallet_switchEthereumChain",
-                        params: [{ chainId: data[0].chainId }],
+                        params: [{chainId: data[0].chainId}],
                       });
                     } catch (switchError) {
                       // not checking specific error code, because maybe we're not using MetaMask
@@ -381,7 +382,7 @@ function App(props) {
     }
   } else {
     networkDisplay = (
-      <div style={{ zIndex: -1, position: "absolute", right: 154, top: 28, padding: 16, color: targetNetwork.color }}>
+      <div style={{zIndex: -1, position: "absolute", right: 154, top: 28, padding: 16, color: targetNetwork.color}}>
         {targetNetwork.name}
       </div>
     );
@@ -432,7 +433,7 @@ function App(props) {
     ethers.utils.formatEther(yourLocalBalance) <= 0
   ) {
     faucetHint = (
-      <div style={{ padding: 16 }}>
+      <div style={{padding: 16}}>
         <Button
           type="primary"
           onClick={() => {
@@ -459,14 +460,14 @@ function App(props) {
 
   let diceRollImg = "";
   if (diceRollImage) {
-    diceRollImg = <img style={{ width: "300px", heigth: "300px" }} src={diceImages[`${diceRollImage}.png`].default} />;
+    diceRollImg = <img style={{width: "300px", heigth: "300px"}} src={diceImages[`${diceRollImage}.png`].default}/>;
   }
 
   const rollTheDice = async () => {
     setDiceRolled(true);
     setDiceRollImage("ROLL");
 
-    tx(writeContracts.DiceGame.rollTheDice({ value: ethers.utils.parseEther("0.002"), gasLimit: 500000 }), update => {
+    tx(writeContracts.DiceGame.rollTheDice({value: ethers.utils.parseEther("0.002"), gasLimit: 500000}), update => {
       if (update?.status === "failed") {
         setDiceRolled(false);
         //setDiceRollImage(null);
@@ -474,9 +475,9 @@ function App(props) {
     });
   };
 
-  /*
+
   const riggedRoll = async () => {
-    tx(writeContracts.RiggedRoll.riggedRoll({ gasLimit: 500000 }), update => {
+    tx(writeContracts.RiggedRoll.riggedRoll({gasLimit: 500000}), update => {
       console.log("TX UPDATE", update);
       if (update?.status === "sent" || update?.status === 1) {
         setDiceRolled(true);
@@ -503,7 +504,7 @@ function App(props) {
       setDiceRolled(false);
     }
   });
-*/
+
 
   const filter = readContracts.DiceGame?.filters.Roll(address, null);
 
@@ -520,10 +521,10 @@ function App(props) {
   return (
     <div className="App">
       {/* ✏️ Edit the header and change the title to your project name */}
-      <Header />
+      <Header/>
       {networkDisplay}
       <BrowserRouter>
-        <Menu style={{ textAlign: "center" }} selectedKeys={[route]} mode="horizontal">
+        <Menu style={{textAlign: "center"}} selectedKeys={[route]} mode="horizontal">
           <Menu.Item key="/">
             <Link
               onClick={() => {
@@ -548,65 +549,65 @@ function App(props) {
         {console.log("roll events: ", rollEvents)}
         <Switch>
           <Route exact path="/">
-            <div style={{ display: "flex" }}>
-              <div style={{ width: 250, margin: "auto", marginTop: 64 }}>
+            <div style={{display: "flex"}}>
+              <div style={{width: 250, margin: "auto", marginTop: 64}}>
                 <div>Roll Events:</div>
                 <List
-                  style={{ height: 258, overflow: "hidden" }}
+                  style={{height: 258, overflow: "hidden"}}
                   dataSource={rollEvents}
                   renderItem={item => {
                     return (
                       <List.Item
                         key={item.args[0] + " " + item.args[1] + " " + date.getTime() + " " + item.blockNumber}
                       >
-                        <Address value={item.args[0]} ensProvider={mainnetProvider} fontSize={16} />
+                        <Address value={item.args[0]} ensProvider={mainnetProvider} fontSize={16}/>
                         &nbsp;Roll:&nbsp;{item.args[1].toNumber().toString(16).toUpperCase()}
                       </List.Item>
                     );
                   }}
                 />
               </div>
-              <div id="centerWrapper" style={{ padding: 16 }}>
+              <div id="centerWrapper" style={{padding: 16}}>
                 <h2>Roll a 0, 1, or 2 to win the prize!</h2>
-                <Balance balance={prize} dollarMultiplier={price} fontSize={32} />
-                <div style={{ padding: 16, format: "flex", flexDirection: "row" }}>
+                <Balance balance={prize} dollarMultiplier={price} fontSize={32}/>
+                <div style={{padding: 16, format: "flex", flexDirection: "row"}}>
                   <Button type="primary" disabled={diceRolled} onClick={rollTheDice}>
                     Roll the dice!
                   </Button>
-                  {/*
-                  <div style={{ padding: 16 }}>
-                    <Account
-                      address={readContracts?.RiggedRoll?.address}
-                      localProvider={localProvider}
-                      userSigner={false}
-                      mainnetProvider={mainnetProvider}
-                      price={price}
-                      web3Modal={false}
-                      loadWeb3Modal={false}
-                      logoutOfWeb3Modal={false}
-                      blockExplorer={blockExplorer}
-                    />
-                    <Button style={{ margin: 16 }} type="primary" disabled={diceRolled} onClick={riggedRoll}>
-                      Rigged Roll!
-                    </Button>
-                  </div>
-                */}
+                  {
+                    <div style={{padding: 16}}>
+                      <Account
+                        address={readContracts?.RiggedRoll?.address}
+                        localProvider={localProvider}
+                        userSigner={false}
+                        mainnetProvider={mainnetProvider}
+                        price={price}
+                        web3Modal={false}
+                        loadWeb3Modal={false}
+                        logoutOfWeb3Modal={false}
+                        blockExplorer={blockExplorer}
+                      />
+                      <Button style={{margin: 16}} type="primary" disabled={diceRolled} onClick={riggedRoll}>
+                        Rigged Roll!
+                      </Button>
+                    </div>
+                  }
                 </div>
                 {diceRollImg}
               </div>
-              <div style={{ width: 250, margin: "auto", marginTop: 32 }}>
+              <div style={{width: 250, margin: "auto", marginTop: 32}}>
                 <div>Winner Events:</div>
                 <List
-                  style={{ height: 258, overflow: "hidden" }}
+                  style={{height: 258, overflow: "hidden"}}
                   dataSource={winnerEvents}
                   renderItem={item => {
                     return (
                       <List.Item
                         key={item.args[0] + " " + item.args[1] + " " + date.getTime() + " " + item.blockNumber}
                       >
-                        <Address value={item.args[0]} ensProvider={mainnetProvider} fontSize={16} />
+                        <Address value={item.args[0]} ensProvider={mainnetProvider} fontSize={16}/>
                         <br></br>
-                        <Balance balance={item.args[1]} dollarMultiplier={price} />
+                        <Balance balance={item.args[1]} dollarMultiplier={price}/>
                       </List.Item>
                     );
                   }}
@@ -643,10 +644,10 @@ function App(props) {
         </Switch>
       </BrowserRouter>
 
-      <ThemeSwitch />
+      <ThemeSwitch/>
 
       {/* 👨‍💼 Your account is in the top right with a wallet at connect options */}
-      <div style={{ position: "fixed", textAlign: "right", right: 0, top: 0, padding: 10 }}>
+      <div style={{position: "fixed", textAlign: "right", right: 0, top: 0, padding: 10}}>
         <Account
           address={address}
           localProvider={localProvider}
@@ -662,16 +663,16 @@ function App(props) {
       </div>
 
       {/* 🗺 Extra UI like gas price, eth price, faucet, and support: */}
-      <div style={{ position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10 }}>
+      <div style={{position: "fixed", textAlign: "left", left: 0, bottom: 20, padding: 10}}>
         <Row align="middle" gutter={[4, 4]}>
           <Col span={8}>
-            <Ramp price={price} address={address} networks={NETWORKS} />
+            <Ramp price={price} address={address} networks={NETWORKS}/>
           </Col>
 
-          <Col span={8} style={{ textAlign: "center", opacity: 0.8 }}>
-            <GasGauge gasPrice={gasPrice} />
+          <Col span={8} style={{textAlign: "center", opacity: 0.8}}>
+            <GasGauge gasPrice={gasPrice}/>
           </Col>
-          <Col span={8} style={{ textAlign: "center", opacity: 1 }}>
+          <Col span={8} style={{textAlign: "center", opacity: 1}}>
             <Button
               onClick={() => {
                 window.open("https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA");
@@ -679,7 +680,7 @@ function App(props) {
               size="large"
               shape="round"
             >
-              <span style={{ marginRight: 8 }} role="img" aria-label="support">
+              <span style={{marginRight: 8}} role="img" aria-label="support">
                 💬
               </span>
               Support
@@ -692,7 +693,7 @@ function App(props) {
             {
               /*  if the local provider has a signer, let's show the faucet:  */
               faucetAvailable ? (
-                <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider} />
+                <Faucet localProvider={localProvider} price={price} ensProvider={mainnetProvider}/>
               ) : (
                 ""
               )
