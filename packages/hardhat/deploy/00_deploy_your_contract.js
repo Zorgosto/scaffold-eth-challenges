@@ -31,14 +31,14 @@ module.exports = async ({getNamedAccounts, deployments, getChainId}) => {
     from: deployer,
     args: [balloons.address],
     log: true,
-    waitConfirmations: 5,
+    // waitConfirmations: 5,
   });
 
   const dex = await ethers.getContract("DEX", deployer);
 
   // paste in your front-end address here to get 10 balloons on deploy:
   await balloons.transfer(
-    "0x0Ff7B0fC4C2A0ACa9da1974F3d4CbFf1Bb6c81ea",
+    "0xe5750Ede1266CFEd9247E92EE151aAF64Aa63FD2",
     "" + 10 * 10 ** 18
   );
 
