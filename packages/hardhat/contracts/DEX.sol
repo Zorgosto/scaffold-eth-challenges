@@ -17,6 +17,12 @@ contract DEX {
 
     using SafeMath for uint256; //outlines use of SafeMath for uint256 variables
     IERC20 token; //instantiates the imported contract
+    mapping(address => uint256) public liquidity;
+    uint256 public totalLiquidity;
+    uint256 reserveETH;
+    uint256 reserveBAL;
+    uint256 priceETH;
+    uint256 priceBAL;
 
     /* ========== EVENTS ========== */
 
@@ -43,7 +49,8 @@ contract DEX {
     /* ========== CONSTRUCTOR ========== */
 
     constructor(address token_addr) public {
-        token = IERC20(token_addr); //specifies the token address that will hook into the interface and be used through the variable 'token'
+        token = IERC20(token_addr);
+        //specifies the token address that will hook into the interface and be used through the variable 'token'
     }
 
     /* ========== MUTATIVE FUNCTIONS ========== */
@@ -54,34 +61,72 @@ contract DEX {
      * @return totalLiquidity is the number of LPTs minting as a result of deposits made to DEX contract
      * NOTE: since ratio is 1:1, this is fine to initialize the totalLiquidity (wrt to balloons) as equal to eth balance of contract.
      */
-    function init(uint256 tokens) public payable returns (uint256) {}
+    function init(uint256 tokens) public payable returns (uint256) {
+        require(totalLiquidity == 0, "DEX: init - already has liquidity");
+        totalLiquidity = address(this).balance;
+        liquidity[msg.sender] = totalLiquidity;
+        require(token.transferFrom(msg.sender, address(this), tokens));
+        return totalLiquidity;
+    }
 
     /**
      * @notice returns yOutput, or yDelta for xInput (or xDelta)
      * @dev Follow along with the [original tutorial](https://medium.com/@austin_48503/%EF%B8%8F-minimum-viable-exchange-d84f30bd0c90) Price section for an understanding of the DEX's pricing model and for a price function to add to your contract. You may need to update the Solidity syntax (e.g. use + instead of .add, * instead of .mul, etc). Deploy when you are done.
      */
+    // deltaY = (deltaX * fee * yReserve) / (reserveX + deltaX * fee)
+    //fee = 0.997 which is 997 / 1000 as fraction
     function price(
         uint256 xInput,
         uint256 xReserves,
         uint256 yReserves
-    ) public view returns (uint256 yOutput) {}
+    ) public view returns (uint256 yOutput) {
+        //Mult with numerator and denominator part of fee
+        uint256 xInputWithFee = (xInput * 997) / 1000;
+        uint256 numerator = xInputWithFee * yReserves;
+        uint256 denominator = xInputWithFee + xReserves;
+        return numerator / denominator;
+    }
 
     /**
      * @notice returns liquidity for a user. Note this is not needed typically due to the `liquidity()` mapping variable being public and having a getter as a result. This is left though as it is used within the front end code (App.jsx).
      * if you are using a mapping liquidity, then you can use `return liquidity[lp]` to get the liquidity for a user.
      *
      */
-    function getLiquidity(address lp) public view returns (uint256) {}
+    function getLiquidity(address lp) public view returns (uint256) {
+        return liquidity[msg.sender];
+    }
 
     /**
      * @notice sends Ether to DEX in exchange for $BAL
      */
-    function ethToToken() public payable returns (uint256 tokenOutput) {}
+    function ethToToken() public payable returns (uint256 tokenOutput) {
+        require(msg.value > 0, "Cannot swap 0 ETH");
+        uint256 xReserve = address(this).balance - msg.value;
+        uint256 yReserve = token.balanceOf(address(this));
+
+        uint256 tokenOutput = price(msg.value, xReserve, yReserve);
+
+        require(token.transfer(msg.sender, tokenOutput), "Failed to send token to sender");
+        emit EthToTokenSwap();
+        return tokenOutput;
+    }
 
     /**
      * @notice sends $BAL tokens to DEX in exchange for Ether
      */
-    function tokenToEth(uint256 tokenInput) public returns (uint256 ethOutput) {}
+    function tokenToEth(uint256 tokenInput) public returns (uint256 ethOutput) {
+        require(tokenInput > 0, "Cannot swap 0 Tokens");
+        uint256 xReserve = address(this).balance;
+        uint256 yReserve = token.balanceOf(address(this));
+
+        uint256 ethOutput = price(tokenInput, yReserve, xReserve);
+
+        require(token.transferFrom(msg.sender, address(this), tokenInput), "Failed to send token to DEX");
+        (bool sent,) = msg.sender.call{value: ethOutput}("");
+        require(sent, "Failed to send eth to sender");
+        emit TokenToEthSwap();
+        return ethOutput;
+    }
 
     /**
      * @notice allows deposits of $BAL and $ETH to liquidity pool
